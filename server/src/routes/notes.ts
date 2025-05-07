@@ -6,8 +6,16 @@ const prisma = new PrismaClient();
 export async function notesRoutes(server: FastifyInstance) {
   // Get all notes
   server.get("/notes", async (request, reply) => {
-    const notes = await prisma.note.findMany();
-    return notes;
+    try {
+      const notes = await prisma.note.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return notes;
+    } catch (err) {
+      reply.status(500).send({ error: "Failed to fetch notes" });
+    }
   });
 
   // Create a new note
